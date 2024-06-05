@@ -1,13 +1,13 @@
-name: IR heatpump
+name: IR Thermostat
 products:
-  - id: hwktwkq
-    name: Moes SD16Pro
+  - id: aqlyorlybbtn6ox7
+    name: Moes IR Thermostat
 primary_entity:
   entity: climate
   dps:
     - id: 1
-      type: boolean
       name: hvac_mode
+      type: boolean
       mapping:
         - dps_val: false
           value: "off"
@@ -19,56 +19,191 @@ primary_entity:
             - dps_val: warm
               value: heat
             - dps_val: auto
-              value: heatcool
+              value: auto
             - dps_val: air
               value: fan_only
             - dps_val: dehumidify
               value: dry
     - id: 2
-      type: integer
       name: current_temperature
+      type: integer
       mapping:
         - scale: 10
     - id: 3
-      type: integer
       name: temperature
+      type: integer
+      unit: C
       range:
         min: 16
-        max: 32
+        max: 30
     - id: 4
-      type: string
       name: mode
+      type: string
       hidden: true
     - id: 5
-      type: string
       name: fan_mode
+      type: string
       mapping:
-        - dps_val: auto
-          value: auto
         - dps_val: low
           value: low
         - dps_val: middle
           value: medium
         - dps_val: high
           value: high
+        - dps_val: auto
+          value: auto
     - id: 9
+      name: max_temperature
       type: integer
-      name: unknown_9
+      range:
+        min: 16
+        max: 30
     - id: 10
+      name: min_temperature
       type: integer
-      name: unknown_10
-    - id: 11
-      type: string
-      name: display_unit
+      range:
+        min: 16
+        max: 30
     - id: 12
-      type: integer
       name: current_humidity
+      type: integer
+      unit: "%"
+      range:
+        max: 100
+        min: 0
     - id: 15
       type: string
-      name: unknown_15
+      name: scene
     - id: 16
       type: string
-      name: unknown_16
-    - id: 18
-      type: integer
-      name: unknown_18
+      name: status
+secondary_entities:
+# Doesn't seem to be usefull on this device
+#   - entity: switch
+#     name: power
+#     dps:
+#       - id: 1
+#         type: boolean
+#         name: infared_switch
+  - entity: sensor
+    name: Temperature
+    class: temperature
+    dps:
+      - id: 2
+        type: integer
+        name: sensor
+        unit: C
+        class: measurement
+        mapping:
+          - scale: 10
+  - entity: binary_sensor
+    name: fault
+    class: problem
+    category: diagnostic
+    dps:
+      - id: 6
+        type: bitfield
+        name: sensor
+        optional: true
+        mapping:
+          - dps_val: 0
+            value: serious_fault
+          - dps_val: 1
+            value: sensor_fault
+  - entity: button
+    name: Filter reset
+    class: restart
+    category: config
+    dps:
+      - id: 7
+        type: boolean
+        optional: true
+        name: button
+  - entity: sensor
+    name: Filter life
+    class: duration
+    category: diagnostic
+    dps:
+      - id: 8
+        type: integer
+        name: sensor
+        unit: h
+        class: measurement
+        range:
+          max: 720
+          min: 0
+  - entity: select
+    translation_key: temperature_unit
+    category: config
+    dps:
+      - id: 11
+        type: string
+        name: option
+        mapping:
+          - dps_val: c
+            value: celsius
+          - dps_val: f
+            value: fahrenheit
+  - entity: sensor
+    name: Humidity
+    class: humidity
+    dps:
+      - id: 12
+        type: integer
+        name: sensor
+        unit: "%"
+        class: measurement
+        range:
+          max: 100
+          min: 0
+  - entity: sensor
+    name: Running time
+    class: duration
+    category: diagnostic
+    dps:
+      - id: 18
+        type: integer
+        name: sensor
+        unit: h
+        class: measurement
+        range:
+          max: 999999
+          min: 0
+  - entity: switch
+    name: Internet connection
+    category: config
+    dps:
+      - id: 19
+        type: boolean
+        name: switch
+        optional: true
+        mapping:
+          - dps_val: true
+            value: false
+            icon: "mdi:lan-disconnect"
+          - dps_val: false
+            value: true
+            icon: "mdi:lan-connect"
+          - dps_val: null
+            hidden: true
+            value: true
+            icon: "mdi:lan-connect"
+  - entity: button
+    name: Run time reset
+    class: restart
+    category: config
+    dps:
+      - id: 20
+        type: boolean
+        optional: true
+        name: button
+  - entity: remote
+    dps:
+      - id: 201
+        name: send
+        type: string
+      - id: 202
+        name: receive
+        type: string
+        optional: true
+        persist: false
