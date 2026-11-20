@@ -193,3 +193,15 @@ entities:
         name: send
         type: string
         optional: true
+  - entity: text
+    name: IR command
+    icon: "mdi:remote"
+    category: config
+    dps:
+      - id: 201
+        name: value
+        type: string
+        optional: true
+        range:
+          min: 0
+          max: 255
